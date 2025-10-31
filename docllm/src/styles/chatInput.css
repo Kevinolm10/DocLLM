@@ -1,0 +1,104 @@
+.input-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.input-container:focus-within {
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+  border: 1px solid #007bff;
+}
+
+.input-container.disabled {
+  opacity: 0.6;
+  background-color: #f8f9fa;
+}
+
+.input-wrapper {
+  padding: 16px;
+}
+
+.message-input {
+  width: 100%;
+  min-height: 20px;
+  max-height: 120px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #212529;
+  background-color: transparent;
+  overflow-y: auto;
+}
+
+.message-input::placeholder {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.message-input:disabled {
+  cursor: not-allowed;
+  color: #6c757d;
+}
+
+.message-input::-webkit-scrollbar {
+  width: 4px;
+}
+
+.message-input::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.message-input::-webkit-scrollbar-thumb {
+  background: #dee2e6;
+  border-radius: 2px;
+}
+
+.message-input::-webkit-scrollbar-thumb:hover {
+  background: #adb5bd;
+}
+
+.input-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e9ecef;
+}
+
+.character-count {
+  font-size: 11px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.character-count.near-limit {
+  color: #ffc107;
+}
+
+.character-count.at-limit {
+  color: #dc3545;
+}
+
+.input-hint {
+  font-size: 11px;
+  color: #adb5bd;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .input-wrapper {
+    padding: 12px;
+  }
+  
+  .input-hint {
+    display: none;
+  }
+}
