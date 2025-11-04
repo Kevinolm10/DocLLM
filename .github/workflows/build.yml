@@ -53,6 +53,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write  # Add this line for permissions
     
     steps:
       - name: Download Windows artifacts
@@ -69,18 +71,18 @@ jobs:
           path: ./release-files/
         continue-on-error: true
       
-      # Removed Linux artifacts download
-      
       - name: List files to release
         run: |
           echo "Files to be released:"
           find ./release-files/ -type f -name "*.exe" -o -name "*.dmg" || echo "No executable files found"
+          ls -la ./release-files/ || echo "No release-files directory"
       
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2  # Updated to v2
         with:
           files: ./release-files/**/*
           draft: false
           prerelease: false
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
