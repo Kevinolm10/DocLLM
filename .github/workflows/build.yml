@@ -3,8 +3,8 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*' # Triggers on version tags like v1.0.0
-  workflow_dispatch: # Allows manual trigger
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,9 +12,9 @@ jobs:
     continue-on-error: false
     
     strategy:
-      fail-fast: false  # Don't cancel other jobs if one fails
+      fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest, macos-latest]  # Removed ubuntu-latest
     
     steps:
       - name: Checkout code
@@ -40,9 +40,7 @@ jobs:
         if: runner.os == 'macOS'
         run: npx electron-builder --mac --publish=never
         
-      - name: Build Electron app for Linux
-        if: runner.os == 'Linux'
-        run: npx electron-builder --linux --publish=never
+      # Removed the Linux build step
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -71,17 +69,12 @@ jobs:
           path: ./release-files/
         continue-on-error: true
       
-      - name: Download Linux artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: Linux-release
-          path: ./release-files/
-        continue-on-error: true
+      # Removed Linux artifacts download
       
       - name: List files to release
         run: |
           echo "Files to be released:"
-          find ./release-files/ -type f -name "*.exe" -o -name "*.dmg" -o -name "*.AppImage" -o -name "*.deb" || echo "No executable files found"
+          find ./release-files/ -type f -name "*.exe" -o -name "*.dmg" || echo "No executable files found"
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
