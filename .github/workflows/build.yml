@@ -27,39 +27,53 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Create assets directory (for icons)
-        run: mkdir -p assets
+      - name: Debug - Check package.json scripts
+        run: |
+          echo "=== Package.json scripts ==="
+          cat package.json | grep -A 20 '"scripts"'
         shell: bash
       
-      - name: Create placeholder icon (Windows)
-        if: runner.os == 'Windows'
+      - name: Build Renderer (React app)
+        run: npm run build:renderer
+      
+      - name: Build Electron Main Process
+        run: npm run build:electron
+        
+      - name: Debug - Check dist folder
         run: |
-          # Create a simple ico file or copy from somewhere
-          echo "Creating placeholder icon for Windows build"
+          echo "=== Contents of dist folder ==="
+          ls -la dist/ || echo "No dist folder found"
         shell: bash
       
       - name: Build Electron app for Windows
         if: runner.os == 'Windows'
         run: |
-          npm run build
-          npm run build:win
+          npx electron-builder --win --publish=never
+        env:
+          DEBUG: electron-builder
         
       - name: Build Electron app for macOS
         if: runner.os == 'macOS'
         run: |
-          npm run build
-          npm run build:mac
+          npx electron-builder --mac --publish=never
+        env:
+          DEBUG: electron-builder
         
       - name: Build Electron app for Linux
         if: runner.os == 'Linux'
         run: |
-          npm run build
-          npm run build:linux
+          npx electron-builder --linux --publish=never
+        env:
+          DEBUG: electron-builder
       
-      - name: List release directory contents
+      - name: Debug - List release directory contents
         run: |
-          echo "Contents of release directory:"
+          echo "=== Contents of release directory ==="
           ls -la release/ || echo "Release directory not found"
+          echo "=== All .exe files ==="
+          find . -name "*.exe" -type f || echo "No .exe files found"
+          echo "=== All files in release ==="
+          find release/ -type f || echo "No files in release directory"
         shell: bash
       
       - name: Upload Windows artifacts
@@ -67,9 +81,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-release
-          path: |
-            release/*.exe
-            release/*.zip
+          path: release/
           retention-days: 30
       
       - name: Upload macOS artifacts
@@ -77,9 +89,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-release
-          path: |
-            release/*.dmg
-            release/*.zip
+          path: release/
           retention-days: 30
       
       - name: Upload Linux artifacts
@@ -87,10 +97,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linux-release
-          path: |
-            release/*.AppImage
-            release/*.deb
-            release/*.rpm
+          path: release/
           retention-days: 30
 
   release:
@@ -103,29 +110,34 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: windows-release
-          path: ./release-files/
+          path: ./windows-files/
       
       - name: Download macOS artifacts
         uses: actions/download-artifact@v4
         with:
           name: macos-release
-          path: ./release-files/
+          path: ./macos-files/
+        continue-on-error: true
       
       - name: Download Linux artifacts
         uses: actions/download-artifact@v4
         with:
           name: linux-release
-          path: ./release-files/
+          path: ./linux-files/
+        continue-on-error: true
       
-      - name: List downloaded files
+      - name: List all downloaded files
         run: |
-          echo "Downloaded release files:"
-          find ./release-files/ -type f
+          echo "=== All downloaded files ==="
+          find . -type f -name "*.exe" -o -name "*.dmg" -o -name "*.AppImage" -o -name "*.deb"
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./release-files/*
+          files: |
+            windows-files/*
+            macos-files/*
+            linux-files/*
           draft: false
           prerelease: false
           generate_release_notes: true
