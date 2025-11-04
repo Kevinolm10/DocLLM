@@ -9,8 +9,10 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    continue-on-error: false
     
     strategy:
+      fail-fast: false  # Don't cancel other jobs if one fails
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
     
@@ -27,77 +29,26 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Debug - Check package.json scripts
-        run: |
-          echo "=== Package.json scripts ==="
-          cat package.json | grep -A 20 '"scripts"'
-        shell: bash
-      
-      - name: Build Renderer (React app)
-        run: npm run build:renderer
-      
-      - name: Build Electron Main Process
-        run: npm run build:electron
-        
-      - name: Debug - Check dist folder
-        run: |
-          echo "=== Contents of dist folder ==="
-          ls -la dist/ || echo "No dist folder found"
-        shell: bash
+      - name: Build application
+        run: npm run build
       
       - name: Build Electron app for Windows
         if: runner.os == 'Windows'
-        run: |
-          npx electron-builder --win --publish=never
-        env:
-          DEBUG: electron-builder
+        run: npx electron-builder --win --publish=never
         
       - name: Build Electron app for macOS
         if: runner.os == 'macOS'
-        run: |
-          npx electron-builder --mac --publish=never
-        env:
-          DEBUG: electron-builder
+        run: npx electron-builder --mac --publish=never
         
       - name: Build Electron app for Linux
         if: runner.os == 'Linux'
-        run: |
-          npx electron-builder --linux --publish=never
-        env:
-          DEBUG: electron-builder
+        run: npx electron-builder --linux --publish=never
       
-      - name: Debug - List release directory contents
-        run: |
-          echo "=== Contents of release directory ==="
-          ls -la release/ || echo "Release directory not found"
-          echo "=== All .exe files ==="
-          find . -name "*.exe" -type f || echo "No .exe files found"
-          echo "=== All files in release ==="
-          find release/ -type f || echo "No files in release directory"
-        shell: bash
-      
-      - name: Upload Windows artifacts
-        if: runner.os == 'Windows'
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: windows-release
-          path: release/
-          retention-days: 30
-      
-      - name: Upload macOS artifacts
-        if: runner.os == 'macOS'
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-release
-          path: release/
-          retention-days: 30
-      
-      - name: Upload Linux artifacts
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-release
-          path: release/
+          name: ${{ runner.os }}-release
+          path: release/*
           retention-days: 30
 
   release:
@@ -109,37 +60,34 @@ jobs:
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
-          name: windows-release
-          path: ./windows-files/
+          name: Windows-release
+          path: ./release-files/
+        continue-on-error: true
       
       - name: Download macOS artifacts
         uses: actions/download-artifact@v4
         with:
-          name: macos-release
-          path: ./macos-files/
+          name: macOS-release
+          path: ./release-files/
         continue-on-error: true
       
       - name: Download Linux artifacts
         uses: actions/download-artifact@v4
         with:
-          name: linux-release
-          path: ./linux-files/
+          name: Linux-release
+          path: ./release-files/
         continue-on-error: true
       
-      - name: List all downloaded files
+      - name: List files to release
         run: |
-          echo "=== All downloaded files ==="
-          find . -type f -name "*.exe" -o -name "*.dmg" -o -name "*.AppImage" -o -name "*.deb"
+          echo "Files to be released:"
+          find ./release-files/ -type f -name "*.exe" -o -name "*.dmg" -o -name "*.AppImage" -o -name "*.deb" || echo "No executable files found"
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            windows-files/*
-            macos-files/*
-            linux-files/*
+          files: ./release-files/**/*
           draft: false
           prerelease: false
-          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

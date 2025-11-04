@@ -53,13 +53,6 @@
       "dist/**/*",
       "package.json"
     ],
-    "extraResources": [
-      {
-        "from": "assets",
-        "to": "assets",
-        "filter": ["**/*"]
-      }
-    ],
     "win": {
       "target": [
         {
@@ -70,15 +63,13 @@
           "target": "zip",
           "arch": ["x64"]
         }
-      ],
-      "icon": "assets/icon.ico"
+      ]
     },
     "mac": {
       "target": {
         "target": "dmg",
         "arch": ["x64", "arm64"]
-      },
-      "icon": "assets/icon.icns"
+      }
     },
     "linux": {
       "target": [
@@ -90,14 +81,7 @@
           "target": "deb",
           "arch": ["x64"]
         }
-      ],
-      "icon": "assets/icon.png"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      ]
     }
   }
 }
