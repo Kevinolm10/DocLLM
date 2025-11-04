@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest]  # Removed ubuntu-latest
+        os: [windows-latest, macos-latest]
     
     steps:
       - name: Checkout code
@@ -39,8 +39,6 @@ jobs:
       - name: Build Electron app for macOS
         if: runner.os == 'macOS'
         run: npx electron-builder --mac --publish=never
-        
-      # Removed the Linux build step
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -54,33 +52,41 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     permissions:
-      contents: write  # Add this line for permissions
+      contents: write
     
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
           name: Windows-release
-          path: ./release-files/
+          path: ./release-files/windows/
         continue-on-error: true
       
       - name: Download macOS artifacts
         uses: actions/download-artifact@v4
         with:
           name: macOS-release
-          path: ./release-files/
+          path: ./release-files/macos/
         continue-on-error: true
       
-      - name: List files to release
+      - name: List all downloaded files
         run: |
-          echo "Files to be released:"
-          find ./release-files/ -type f -name "*.exe" -o -name "*.dmg" || echo "No executable files found"
+          echo "All downloaded files:"
+          find ./release-files/ -type f || echo "No files found"
+          echo "Directory structure:"
           ls -la ./release-files/ || echo "No release-files directory"
+          ls -la ./release-files/windows/ || echo "No windows directory"
+          ls -la ./release-files/macos/ || echo "No macos directory"
       
       - name: Create Release
-        uses: softprops/action-gh-release@v2  # Updated to v2
+        uses: softprops/action-gh-release@v1
         with:
-          files: ./release-files/**/*
+          files: |
+            ./release-files/windows/*
+            ./release-files/macos/*
           draft: false
           prerelease: false
           generate_release_notes: true
