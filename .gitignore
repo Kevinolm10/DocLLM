@@ -55,9 +55,6 @@ coverage/
 # Electron specific
 app/
 package/
-# Don't ignore these if you have custom electron configs
-# electron-builder.yml
-# electron.json
 
 # Development database/storage
 *.sqlite
@@ -74,28 +71,13 @@ userData/
 documents/
 *.json.backup
 
-# Package manager lockfiles (choose one based on your preference)
-# If using npm, keep package-lock.json and ignore yarn.lock
-# yarn.lock
-# pnpm-lock.yaml
-
-# If using yarn, keep yarn.lock and ignore package-lock.json
-package-lock.json
-# pnpm-lock.yaml
-
-# If using pnpm, keep pnpm-lock.yaml and ignore others
-# package-lock.json
-# yarn.lock
+# Package manager lockfiles
+# Using npm, so keep package-lock.json and ignore others
+yarn.lock
+pnpm-lock.yaml
 
 # Auto-generated files
 *.d.ts.map
-
-# Test files (if you don't want to commit them)
-# __tests__/
-# *.test.js
-# *.test.ts
-# *.spec.js
-# *.spec.ts
 
 # Documentation builds
 docs/build/
