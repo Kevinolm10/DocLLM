@@ -1,6 +1,10 @@
 .chat-interface {
   padding: 20px;
   gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .chat-header {
@@ -23,6 +27,7 @@
 .messages-container {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal overflow */
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -30,6 +35,8 @@
   background-color: #ffffff;
   border-radius: 12px;
   min-height: 400px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .empty-state {
@@ -60,6 +67,10 @@
   padding: 12px 16px;
   border-radius: 18px;
   position: relative;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .user-message .message-content {
@@ -67,9 +78,16 @@
   color: white;
 }
 
+.ai-message .message-content {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
 .message-content p {
   margin: 0 0 4px 0;
   line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .timestamp {
@@ -86,19 +104,76 @@
   padding: 16px;
   border-radius: 12px;
   border-top: 1px solid #e9ecef;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .input-row {
   display: flex;
   gap: 12px;
   align-items: flex-end;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .input-row .input-container {
   flex: 1;
+  min-width: 0; /* Allows flexbox item to shrink below its content size */
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #dc3545;
+}
+
+.status-indicator.connected {
+  background-color: #28a745;
+}
+
+.refresh-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.connection-help {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #fff3cd;
+  border-radius: 8px;
+  border-left: 4px solid #ffc107;
+}
+
+.connection-help code {
+  background-color: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.clear-chat-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
 }
