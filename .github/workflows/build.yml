@@ -35,10 +35,20 @@ jobs:
       - name: Build Electron app for Windows
         if: runner.os == 'Windows'
         run: npx electron-builder --win --publish=never
+        # Remove these env variables if you don't have certificates:
+        # env:
+        #   CSC_LINK: ${{ secrets.WINDOWS_CERTIFICATE }}
+        #   CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
         
       - name: Build Electron app for macOS
         if: runner.os == 'macOS'
         run: npx electron-builder --mac --publish=never
+        # Remove these env variables if you don't have certificates:
+        # env:
+        #   CSC_LINK: ${{ secrets.MAC_CERTIFICATE }}
+        #   CSC_KEY_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
+        #   APPLE_ID: ${{ secrets.APPLE_ID }}
+        #   APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

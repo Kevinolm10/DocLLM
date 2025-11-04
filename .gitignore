@@ -68,7 +68,6 @@ temp/
 
 # User data (for testing)
 userData/
-documents/
 *.json.backup
 
 # Package manager lockfiles
