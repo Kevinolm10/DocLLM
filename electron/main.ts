@@ -1,11 +1,6 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import { promises as fs } from 'fs';
-import path, { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-
-// Fix for ES modules in Electron
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import path from 'path';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -14,7 +9,6 @@ const isDev = process.env.NODE_ENV === 'development' || process.env.VITE_DEV_SER
 function createWindow() {
     // Use __dirname directly (available in CommonJS after compilation)
     const preloadPath = path.join(__dirname, 'preload.js');
-
 
     mainWindow = new BrowserWindow({
         width: 1200,
@@ -63,6 +57,7 @@ function createWindow() {
         // Production: load the built HTML file
         const htmlPath = path.join(__dirname, 'index.html');
         mainWindow.loadFile(htmlPath).catch(err => {
+            console.error('Failed to load HTML file:', err);
         });
     }
 
@@ -73,6 +68,7 @@ function createWindow() {
 
     // Handle external links securely
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        console.log('Blocked attempt to open:', url);
         return { action: 'deny' };
     });
 }
@@ -160,7 +156,6 @@ ipcMain.handle('import-text-file', async () => {
                 { name: 'Text Files', extensions: ['txt', 'md', 'json', 'csv'] },
                 { name: 'Markdown Files', extensions: ['md', 'markdown'] },
                 { name: 'JSON Files', extensions: ['json'] }
-                // Remove "All Files" option
             ]
         });
 
@@ -192,7 +187,7 @@ ipcMain.handle('import-text-file', async () => {
                 }
             }
 
-            // Sanitize content (remove potential script tags, etc.)
+            // Sanitize content
             const sanitizedContent = sanitizeContent(content);
 
             return { content: sanitizedContent, fileName };
