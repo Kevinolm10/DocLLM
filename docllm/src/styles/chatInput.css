@@ -5,6 +5,9 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .input-container:focus-within {
@@ -23,6 +26,7 @@
 
 .message-input {
   width: 100%;
+  max-width: 100%;
   min-height: 20px;
   max-height: 120px;
   border: none;
@@ -34,6 +38,8 @@
   color: #212529;
   background-color: transparent;
   overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .message-input::placeholder {
