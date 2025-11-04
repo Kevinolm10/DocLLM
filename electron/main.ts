@@ -15,9 +15,6 @@ function createWindow() {
     // Use __dirname directly (available in CommonJS after compilation)
     const preloadPath = path.join(__dirname, 'preload.js');
 
-    console.log('Preload path:', preloadPath);
-    console.log('__dirname:', __dirname);
-    console.log('isDev:', isDev);
 
     mainWindow = new BrowserWindow({
         width: 1200,
@@ -25,7 +22,6 @@ function createWindow() {
         minWidth: 800,
         minHeight: 600,
         show: false,
-        icon: path.join(__dirname, '../assets/icon.png'),
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -42,14 +38,12 @@ function createWindow() {
             mainWindow.show();
             mainWindow.focus();
             mainWindow.center();
-            console.log('Window is now visible');
         }
     });
 
     // Fallback to show window
     setTimeout(() => {
         if (mainWindow && !mainWindow.isVisible()) {
-            console.log('Fallback: forcing window to show');
             mainWindow.show();
             mainWindow.focus();
             mainWindow.center();
@@ -58,21 +52,17 @@ function createWindow() {
 
     // Load the app
     if (isDev && process.env.VITE_DEV_SERVER_URL) {
-        console.log('Loading development server:', process.env.VITE_DEV_SERVER_URL);
         mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
 
         mainWindow.webContents.once('dom-ready', () => {
             if (mainWindow) {
                 mainWindow.webContents.openDevTools();
-                console.log('DevTools opened');
             }
         });
     } else {
         // Production: load the built HTML file
         const htmlPath = path.join(__dirname, 'index.html');
-        console.log('Loading HTML file:', htmlPath);
         mainWindow.loadFile(htmlPath).catch(err => {
-            console.error('Failed to load HTML file:', err);
         });
     }
 
@@ -83,7 +73,6 @@ function createWindow() {
 
     // Handle external links securely
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-        console.log('Blocked attempt to open:', url);
         return { action: 'deny' };
     });
 }
@@ -179,21 +168,21 @@ ipcMain.handle('import-text-file', async () => {
             const filePath = result.filePaths[0];
             const fileName = path.basename(filePath);
             const fileExt = path.extname(fileName).toLowerCase();
-            
+
             // Validate file extension
             if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
                 throw new Error(`File type ${fileExt} not allowed`);
             }
-            
+
             // Check file size before reading
             const stats = await fs.stat(filePath);
             if (stats.size > MAX_FILE_SIZE) {
                 throw new Error(`File too large. Max size: ${MAX_FILE_SIZE / 1024 / 1024}MB`);
             }
-            
+
             // Read and validate content
             const content = await fs.readFile(filePath, 'utf-8');
-            
+
             // Basic content validation
             if (fileExt === '.json') {
                 try {
@@ -202,10 +191,10 @@ ipcMain.handle('import-text-file', async () => {
                     throw new Error('Invalid JSON file');
                 }
             }
-            
+
             // Sanitize content (remove potential script tags, etc.)
             const sanitizedContent = sanitizeContent(content);
-            
+
             return { content: sanitizedContent, fileName };
         }
         return null;
