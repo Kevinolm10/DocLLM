@@ -1,73 +1,75 @@
-# React + TypeScript + Vite
+# 📚 DocLLM - AI-Powered Document Management
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> Transform your document workflow with intelligent search and AI assistance
 
-Currently, two official plugins are available:
+[![Downloads](https://img.shields.io/github/downloads/yourusername/docllm/total)](https://github.com/yourusername/docllm/releases)
+[![Latest Release](https://img.shields.io/github/v/release/yourusername/docllm)](https://github.com/yourusername/docllm/releases/latest)
+[![License](https://img.shields.io/github/license/yourusername/docllm)](LICENSE)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Quick Start
 
-## React Compiler
+### 📥 Download
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Platform | Download |
+|----------|----------|
+| 🪟 **Windows** | [Installer](https://github.com/yourusername/docllm/releases/latest/download/DocLLM-Setup-1.0.0.exe) \| [Portable](https://github.com/yourusername/docllm/releases/latest/download/DocLLM-1.0.0.exe) |
+| 🍎 **macOS** | [DMG](https://github.com/yourusername/docllm/releases/latest/download/DocLLM-1.0.0.dmg) |
+| 🐧 **Linux** | [AppImage](https://github.com/yourusername/docllm/releases/latest/download/DocLLM-1.0.0.AppImage) \| [DEB](https://github.com/yourusername/docllm/releases/latest/download/DocLLM-1.0.0.deb) |
 
-## Expanding the ESLint configuration
+### ✨ Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 📁 **File Import**: Support for text, markdown, JSON, and CSV files
+- 🔍 **Smart Search**: AI-powered document search with context understanding
+- 💬 **Chat Interface**: Ask questions about your documents
+- ⚡ **Slash Commands**: Quick actions with `/docs`, `/search`, `/import`
+- 💾 **Local Storage**: Your data stays on your computer
+- 🎯 **No Dependencies**: Works offline, no cloud required
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 🎯 Use Cases
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Documentation Management**: Organize and search technical docs
+- **Research**: Query multiple documents simultaneously  
+- **Knowledge Base**: Build your personal AI assistant
+- **Note Taking**: Intelligent note organization and retrieval
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🏃‍♂️ Running
+
+1. Download the appropriate version for your OS
+2. Install or run the portable version
+3. Start importing your documents
+4. Ask questions and explore!
+
+## 🛠️ Development
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/docllm.git
+cd docllm
+
+# Install dependencies
+npm install
+
+# Run in development mode
+npm run dev
+
+# Build for production
+npm run build:win  # Windows
+npm run build:mac  # macOS  
+npm run build:linux  # Linux
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📸 Screenshots
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+[Add some screenshots here]
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/docllm&type=Date)](https://star-history.com/#yourusername/docllm&Date)
