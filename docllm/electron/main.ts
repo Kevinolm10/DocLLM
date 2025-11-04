@@ -149,6 +149,9 @@ ipcMain.handle('save-documents', async (_, documents) => {
     }
 });
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
+const ALLOWED_EXTENSIONS = ['.txt', '.md', '.json', '.csv'];
+
 ipcMain.handle('import-text-file', async () => {
     try {
         const result = await dialog.showOpenDialog(mainWindow!, {
@@ -156,15 +159,43 @@ ipcMain.handle('import-text-file', async () => {
             filters: [
                 { name: 'Text Files', extensions: ['txt', 'md', 'json', 'csv'] },
                 { name: 'Markdown Files', extensions: ['md', 'markdown'] },
-                { name: 'JSON Files', extensions: ['json'] },
-                { name: 'All Files', extensions: ['*'] }
+                { name: 'JSON Files', extensions: ['json'] }
+                // Remove "All Files" option
             ]
         });
 
         if (!result.canceled && result.filePaths.length > 0) {
-            const content = await fs.readFile(result.filePaths[0], 'utf-8');
-            const fileName = path.basename(result.filePaths[0]);
-            return { content, fileName };
+            const filePath = result.filePaths[0];
+            const fileName = path.basename(filePath);
+            const fileExt = path.extname(fileName).toLowerCase();
+            
+            // Validate file extension
+            if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
+                throw new Error(`File type ${fileExt} not allowed`);
+            }
+            
+            // Check file size before reading
+            const stats = await fs.stat(filePath);
+            if (stats.size > MAX_FILE_SIZE) {
+                throw new Error(`File too large. Max size: ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+            }
+            
+            // Read and validate content
+            const content = await fs.readFile(filePath, 'utf-8');
+            
+            // Basic content validation
+            if (fileExt === '.json') {
+                try {
+                    JSON.parse(content); // Validate JSON
+                } catch {
+                    throw new Error('Invalid JSON file');
+                }
+            }
+            
+            // Sanitize content (remove potential script tags, etc.)
+            const sanitizedContent = sanitizeContent(content);
+            
+            return { content: sanitizedContent, fileName };
         }
         return null;
     } catch (error) {
@@ -172,3 +203,12 @@ ipcMain.handle('import-text-file', async () => {
         throw error;
     }
 });
+
+function sanitizeContent(content: string): string {
+    // Remove potential HTML script tags and other dangerous content
+    return content
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+        .replace(/javascript:/gi, '')
+        .replace(/on\w+\s*=/gi, ''); // Remove event handlers
+}
