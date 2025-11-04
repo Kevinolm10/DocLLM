@@ -1,81 +1,100 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Container from '../container/Container';
 import CustomInput from '../input/CustomInput';
 import SendButton from '../buttons/SendButton';
+import DocumentDashboard from '../documents/DocumentDashboard';
+import { useChat } from '../../hooks/useChat';
 import '../../styles/chatInterface.css';
-
-interface Message {
-    id: string;
-    content: string;
-    sender: 'user' | 'ai';
-    timestamp: Date;
-}
 
 const ChatInterface: React.FC = () => {
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [availableModels] = useState<string[]>([]);
+    const [showDocuments, setShowDocuments] = useState(false);
+    const {
+        messages,
+        isLoading,
+        currentModel,
+        isConnected,
+        setCurrentModel,
+        sendMessage,
+        clearChat,
+        checkConnection
+    } = useChat();
+
+    // Check Ollama connection on component mount
+    useEffect(() => {
+        checkConnection();
+    }, [checkConnection]);
 
     const handleSendMessage = async () => {
         if (!message.trim() || isLoading) return;
 
-        // Add user message
-        const userMessage: Message = {
-            id: Date.now().toString(),
-            content: message,
-            sender: 'user',
-            timestamp: new Date()
-        };
-
-        setMessages(prev => [...prev, userMessage]);
+        await sendMessage(message);
         setMessage('');
-        setIsLoading(true);
-
-        try {
-            // TODO: Replace with your actual AI API call
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
-
-            // Add AI response
-            const aiMessage: Message = {
-                id: (Date.now() + 1).toString(),
-                content: "This is a simulated AI response. Replace this with your actual LLM integration.",
-                sender: 'ai',
-                timestamp: new Date()
-            };
-
-            setMessages(prev => [...prev, aiMessage]);
-        } catch (error) {
-            console.error('Error sending message:', error);
-            // Handle error - maybe add an error message
-        } finally {
-            setIsLoading(false);
-        }
     };
+
+    const renderMessage = (msg: typeof messages[0]) => (
+        <div key={msg.id} className={`message ${msg.sender}-message`}>
+            <div className="message-content">
+                <p>{msg.content}</p>
+                <span className="timestamp">
+                    {msg.timestamp.toLocaleTimeString()}
+                </span>
+            </div>
+        </div>
+    );
 
     return (
         <Container className="chat-interface">
             <div className="chat-header">
                 <h1>DocLLM Assistant</h1>
-                <p>Ask me anything about your documents!</p>
+                <div className="header-controls">
+                    <div className="connection-status">
+                        <span className={`status-indicator ${isConnected ? 'connected' : 'disconnected'}`}></span>
+                        <span>{isConnected ? `Connected` : 'Disconnected from Ollama'}</span>
+                        <button onClick={checkConnection} className="refresh-btn">🔄</button>
+                    </div>
+
+                    <button
+                        onClick={() => setShowDocuments(true)}
+                        className="docs-btn"
+                    >
+                        📚 Manage Docs
+                    </button>
+                </div>
+
+                {/* Model Selector */}
+                {isConnected && availableModels.length > 0 && (
+                    <div className="model-selector">
+                        <label htmlFor="model-select">Model: </label>
+                        <select
+                            id="model-select"
+                            value={currentModel}
+                            onChange={(e) => setCurrentModel(e.target.value)}
+                            className="model-dropdown"
+                        >
+                            {availableModels.map(model => (
+                                <option key={model} value={model}>{model}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
             </div>
 
             <div className="messages-container">
                 {messages.length === 0 ? (
                     <div className="empty-state">
-                        <h3>👋 Welcome!</h3>
-                        <p>Start a conversation by typing a message below.</p>
+                        <h3>Welcome to DocLLM!</h3>
+                        <p>Start a conversation with your local AI assistant.</p>
+                        {!isConnected && (
+                            <div className="connection-help">
+                                <p>⚠️ Make sure Ollama is running:</p>
+                                <code>ollama serve</code>
+                            </div>
+                        )}
                     </div>
                 ) : (
-                    messages.map(msg => (
-                        <div key={msg.id} className={`message ${msg.sender}-message`}>
-                            <div className="message-content">
-                                <p>{msg.content}</p>
-                                <span className="timestamp">
-                                    {msg.timestamp.toLocaleTimeString()}
-                                </span>
-                            </div>
-                        </div>
-                    ))
+                    messages.map(renderMessage)
                 )}
                 {isLoading && (
                     <div className="message ai-message">
@@ -92,18 +111,28 @@ const ChatInterface: React.FC = () => {
                         value={message}
                         onChange={setMessage}
                         onSend={handleSendMessage}
-                        placeholder="Type your message..."
-                        disabled={isLoading}
+                        placeholder={isConnected ? "Ask me anything..." : "Connect to Ollama first..."}
+                        disabled={isLoading || !isConnected}
                         maxLength={1000}
                     />
                     <SendButton
                         onPress={handleSendMessage}
-                        disabled={false}
+                        disabled={!isConnected}
                         isLoading={isLoading}
                         message={message}
                     />
                 </div>
+                {messages.length > 0 && (
+                    <button onClick={clearChat} className="clear-chat-btn">
+                        Clear Chat
+                    </button>
+                )}
             </div>
+
+            <DocumentDashboard
+                isOpen={showDocuments}
+                onClose={() => setShowDocuments(false)}
+            />
         </Container>
     );
 };
