@@ -27,25 +27,71 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Build application
-        run: npm run build
-        
-      - name: Build Electron app
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            npm run build:win
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            npm run build:mac
-          else
-            npm run build:linux
-          fi
+      - name: Create assets directory (for icons)
+        run: mkdir -p assets
         shell: bash
       
-      - name: Upload artifacts
+      - name: Create placeholder icon (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          # Create a simple ico file or copy from somewhere
+          echo "Creating placeholder icon for Windows build"
+        shell: bash
+      
+      - name: Build Electron app for Windows
+        if: runner.os == 'Windows'
+        run: |
+          npm run build
+          npm run build:win
+        
+      - name: Build Electron app for macOS
+        if: runner.os == 'macOS'
+        run: |
+          npm run build
+          npm run build:mac
+        
+      - name: Build Electron app for Linux
+        if: runner.os == 'Linux'
+        run: |
+          npm run build
+          npm run build:linux
+      
+      - name: List release directory contents
+        run: |
+          echo "Contents of release directory:"
+          ls -la release/ || echo "Release directory not found"
+        shell: bash
+      
+      - name: Upload Windows artifacts
+        if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
-          name: release-${{ matrix.os }}
-          path: release/*
+          name: windows-release
+          path: |
+            release/*.exe
+            release/*.zip
+          retention-days: 30
+      
+      - name: Upload macOS artifacts
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-release
+          path: |
+            release/*.dmg
+            release/*.zip
+          retention-days: 30
+      
+      - name: Upload Linux artifacts
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-release
+          path: |
+            release/*.AppImage
+            release/*.deb
+            release/*.rpm
+          retention-days: 30
 
   release:
     needs: build
@@ -53,17 +99,35 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     
     steps:
-      - name: Download all artifacts
+      - name: Download Windows artifacts
         uses: actions/download-artifact@v4
+        with:
+          name: windows-release
+          path: ./release-files/
+      
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-release
+          path: ./release-files/
+      
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-release
+          path: ./release-files/
+      
+      - name: List downloaded files
+        run: |
+          echo "Downloaded release files:"
+          find ./release-files/ -type f
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            release-windows-latest/**/*
-            release-macos-latest/**/*
-            release-ubuntu-latest/**/*
+          files: ./release-files/*
           draft: false
           prerelease: false
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
