@@ -14,7 +14,6 @@
 |----------|----------|
 | 🪟 **Windows** | [Installer](https://github.com/kevinolm10/docllm/releases/latest/download/DocLLM-Setup-1.0.0.exe) \| [Portable](https://github.com/kevinolm10/docllm/releases/latest/download/DocLLM-1.0.0.exe) |
 | 🍎 **macOS** | [DMG](https://github.com/kevinolm10/docllm/releases/latest/download/DocLLM-1.0.0.dmg) |
-| 🐧 **Linux** | [AppImage](https://github.com/kevinolm10/docllm/releases/latest/download/DocLLM-1.0.0.AppImage) \| [DEB](https://github.com/kevinolm10/docllm/releases/latest/download/DocLLM-1.0.0.deb) |
 
 ### Features
 
