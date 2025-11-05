@@ -8,21 +8,21 @@
 
 ## 🚀 Quick Start
 
-### 📥 Download
+### Download
 
 | Platform | Download |
 |----------|----------|
-| 🪟 **Windows** | [Installer](https://github.com/kevinolm10/docllm/releases/latest/download/DocLLM-Setup-1.0.0.exe) \| [Portable](https://github.com/kevinolm10/docllm/releases/latest/download/DocLLM-1.0.0.exe) |
-| 🍎 **macOS** | [DMG](https://github.com/kevinolm10/docllm/releases/latest/download/DocLLM-1.0.0.dmg) |
+| **Windows** | [Installer](https://github.com/kevinolm10/docllm/releases/latest/download/DocLLM-Setup-1.0.0.exe) \| [Portable](https://github.com/kevinolm10/docllm/releases/latest/download/DocLLM-1.0.0.exe) |
+| **macOS** | [DMG](https://github.com/kevinolm10/docllm/releases/latest/download/DocLLM-1.0.0.dmg) |
 
 ### Features
 
-- 📁 **File Import**: Support for text, markdown, JSON, and CSV files
-- 🔍 **Smart Search**: AI-powered document search with context understanding
-- 💬 **Chat Interface**: Ask questions about your documents
-- ⚡ **Slash Commands**: Quick actions with `/docs`, `/search`, `/import`
-- 💾 **Local Storage**: Your data stays on your computer
-- 🎯 **No Dependencies**: Works offline, no cloud required
+- **File Import**: Support for text, markdown, JSON, and CSV files
+- **Smart Search**: AI-powered document search with context understanding
+- **Chat Interface**: Ask questions about your documents
+- **Slash Commands**: Quick actions with `/docs`, `/search`, `/import`
+- **Local Storage**: Your data stays on your computer
+- **No Dependencies**: Works offline, no cloud required
 
 ### Use Cases
 
